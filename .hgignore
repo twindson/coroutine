@@ -1,0 +1,48 @@
+# Mercurial ignore file for hg-watchman integration
+
+# Watchman files
+.watchmanconfig
+.watchman-*
+
+# Build artifacts
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+build/
+dist/
+target/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+log/
+logs/
+
+# Dependencies
+node_modules/
+vendor/

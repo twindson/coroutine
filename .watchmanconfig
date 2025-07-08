@@ -1,0 +1,14 @@
+{
+  "root_restrict_files": [".hg"],
+  "settle": 20,
+  "fsevents_latency": 0.01,
+  "ignore_dirs": [
+    ".hg",
+    "node_modules",
+    "build",
+    "dist",
+    "tmp",
+    ".git"
+  ],
+  "ignore_vcs": [".hg", ".git"]
+}
