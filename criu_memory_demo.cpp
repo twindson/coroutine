@@ -5,20 +5,20 @@
 #include <vector>
 #include <string>
 
-using namespace std;
-
 // 演示不同的内存使用场景
 // Demonstrate different memory usage scenarios
+// Note: Using malloc instead of new to demonstrate low-level memory behavior with CRIU
 
 const size_t MB = 1024 * 1024;
 const size_t MEMORY_SIZE = 100 * MB; // 100 MB
+const int CHECKPOINT_WAIT_TIME = 30; // seconds
 
-void print_info(const string& scenario) {
-    cout << "========================================" << endl;
-    cout << "Scenario: " << scenario << endl;
-    cout << "Process ID: " << getpid() << endl;
-    cout << "Allocated Memory: " << (MEMORY_SIZE / MB) << " MB" << endl;
-    cout << "========================================" << endl;
+void print_info(const std::string& scenario) {
+    std::cout << "========================================" << std::endl;
+    std::cout << "Scenario: " << scenario << std::endl;
+    std::cout << "Process ID: " << getpid() << std::endl;
+    std::cout << "Allocated Memory: " << (MEMORY_SIZE / MB) << " MB" << std::endl;
+    std::cout << "========================================" << std::endl;
 }
 
 void scenario_unused() {
@@ -26,22 +26,22 @@ void scenario_unused() {
     // Scenario 1: Allocate memory but don't use it
     print_info("UNUSED - Allocated but not accessed");
     
-    // 分配内存但不访问任何字节
+    // 分配内存但不访问任何字节 (Using malloc for low-level demonstration)
     // Allocate memory but don't access any bytes
     char* memory = (char*)malloc(MEMORY_SIZE);
     if (!memory) {
-        cerr << "Memory allocation failed!" << endl;
+        std::cerr << "Memory allocation failed!" << std::endl;
         return;
     }
     
-    cout << "Memory allocated at: " << (void*)memory << endl;
-    cout << "Status: Memory allocated but NOT used" << endl;
-    cout << "Expected dump size: ~0 MB (only metadata)" << endl;
-    cout << endl;
-    cout << "Waiting 30 seconds... (use CRIU to checkpoint now)" << endl;
-    cout << "Run: sudo criu dump -t " << getpid() << " -D ./checkpoint-unused --shell-job" << endl;
+    std::cout << "Memory allocated at: " << (void*)memory << std::endl;
+    std::cout << "Status: Memory allocated but NOT used" << std::endl;
+    std::cout << "Expected dump size: ~0 MB (only metadata)" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Waiting " << CHECKPOINT_WAIT_TIME << " seconds... (use CRIU to checkpoint now)" << std::endl;
+    std::cout << "Run: sudo criu dump -t " << getpid() << " -D ./checkpoint-unused --shell-job" << std::endl;
     
-    sleep(30);
+    sleep(CHECKPOINT_WAIT_TIME);
     
     free(memory);
 }
@@ -53,7 +53,7 @@ void scenario_partial() {
     
     char* memory = (char*)malloc(MEMORY_SIZE);
     if (!memory) {
-        cerr << "Memory allocation failed!" << endl;
+        std::cerr << "Memory allocation failed!" << std::endl;
         return;
     }
     
@@ -62,14 +62,14 @@ void scenario_partial() {
     size_t used_size = 10 * MB;
     memset(memory, 'A', used_size);
     
-    cout << "Memory allocated at: " << (void*)memory << endl;
-    cout << "Status: " << (used_size / MB) << " MB used out of " << (MEMORY_SIZE / MB) << " MB" << endl;
-    cout << "Expected dump size: ~" << (used_size / MB) << " MB" << endl;
-    cout << endl;
-    cout << "Waiting 30 seconds... (use CRIU to checkpoint now)" << endl;
-    cout << "Run: sudo criu dump -t " << getpid() << " -D ./checkpoint-partial --shell-job" << endl;
+    std::cout << "Memory allocated at: " << (void*)memory << std::endl;
+    std::cout << "Status: " << (used_size / MB) << " MB used out of " << (MEMORY_SIZE / MB) << " MB" << std::endl;
+    std::cout << "Expected dump size: ~" << (used_size / MB) << " MB" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Waiting " << CHECKPOINT_WAIT_TIME << " seconds... (use CRIU to checkpoint now)" << std::endl;
+    std::cout << "Run: sudo criu dump -t " << getpid() << " -D ./checkpoint-partial --shell-job" << std::endl;
     
-    sleep(30);
+    sleep(CHECKPOINT_WAIT_TIME);
     
     free(memory);
 }
@@ -81,7 +81,7 @@ void scenario_full() {
     
     char* memory = (char*)malloc(MEMORY_SIZE);
     if (!memory) {
-        cerr << "Memory allocation failed!" << endl;
+        std::cerr << "Memory allocation failed!" << std::endl;
         return;
     }
     
@@ -89,14 +89,14 @@ void scenario_full() {
     // Use all memory
     memset(memory, 'B', MEMORY_SIZE);
     
-    cout << "Memory allocated at: " << (void*)memory << endl;
-    cout << "Status: All " << (MEMORY_SIZE / MB) << " MB used" << endl;
-    cout << "Expected dump size: ~" << (MEMORY_SIZE / MB) << " MB" << endl;
-    cout << endl;
-    cout << "Waiting 30 seconds... (use CRIU to checkpoint now)" << endl;
-    cout << "Run: sudo criu dump -t " << getpid() << " -D ./checkpoint-full --shell-job" << endl;
+    std::cout << "Memory allocated at: " << (void*)memory << std::endl;
+    std::cout << "Status: All " << (MEMORY_SIZE / MB) << " MB used" << std::endl;
+    std::cout << "Expected dump size: ~" << (MEMORY_SIZE / MB) << " MB" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Waiting " << CHECKPOINT_WAIT_TIME << " seconds... (use CRIU to checkpoint now)" << std::endl;
+    std::cout << "Run: sudo criu dump -t " << getpid() << " -D ./checkpoint-full --shell-job" << std::endl;
     
-    sleep(30);
+    sleep(CHECKPOINT_WAIT_TIME);
     
     free(memory);
 }
@@ -108,12 +108,12 @@ void scenario_progressive() {
     
     char* memory = (char*)malloc(MEMORY_SIZE);
     if (!memory) {
-        cerr << "Memory allocation failed!" << endl;
+        std::cerr << "Memory allocation failed!" << std::endl;
         return;
     }
     
-    cout << "Memory allocated at: " << (void*)memory << endl;
-    cout << endl;
+    std::cout << "Memory allocated at: " << (void*)memory << std::endl;
+    std::cout << std::endl;
     
     // 每10秒使用10MB
     // Use 10MB every 10 seconds
@@ -121,10 +121,10 @@ void scenario_progressive() {
         size_t offset = (i - 1) * 10 * MB;
         memset(memory + offset, 'C', 10 * MB);
         
-        cout << "Step " << i << ": Used " << (i * 10) << " MB total" << endl;
-        cout << "Expected dump size: ~" << (i * 10) << " MB" << endl;
-        cout << "Run: sudo criu dump -t " << getpid() << " -D ./checkpoint-step" << i << " --shell-job" << endl;
-        cout << endl;
+        std::cout << "Step " << i << ": Used " << (i * 10) << " MB total" << std::endl;
+        std::cout << "Expected dump size: ~" << (i * 10) << " MB" << std::endl;
+        std::cout << "Run: sudo criu dump -t " << getpid() << " -D ./checkpoint-step" << i << " --shell-job" << std::endl;
+        std::cout << std::endl;
         
         sleep(10);
     }
@@ -133,21 +133,21 @@ void scenario_progressive() {
 }
 
 void print_usage() {
-    cout << "CRIU Memory Dump Demonstration" << endl;
-    cout << "==============================" << endl;
-    cout << endl;
-    cout << "Usage: ./criu_memory_demo [scenario]" << endl;
-    cout << endl;
-    cout << "Scenarios:" << endl;
-    cout << "  unused      - Allocate memory but don't use it (dump size ~0 MB)" << endl;
-    cout << "  partial     - Allocate and use 10% of memory (dump size ~10 MB)" << endl;
-    cout << "  full        - Allocate and use all memory (dump size ~100 MB)" << endl;
-    cout << "  progressive - Gradually use memory over time" << endl;
-    cout << "  all         - Run all scenarios sequentially" << endl;
-    cout << endl;
-    cout << "Example:" << endl;
-    cout << "  ./criu_memory_demo partial" << endl;
-    cout << endl;
+    std::cout << "CRIU Memory Dump Demonstration" << std::endl;
+    std::cout << "==============================" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Usage: ./criu_memory_demo [scenario]" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Scenarios:" << std::endl;
+    std::cout << "  unused      - Allocate memory but don't use it (dump size ~0 MB)" << std::endl;
+    std::cout << "  partial     - Allocate and use 10% of memory (dump size ~10 MB)" << std::endl;
+    std::cout << "  full        - Allocate and use all memory (dump size ~100 MB)" << std::endl;
+    std::cout << "  progressive - Gradually use memory over time" << std::endl;
+    std::cout << "  all         - Run all scenarios sequentially" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Example:" << std::endl;
+    std::cout << "  ./criu_memory_demo partial" << std::endl;
+    std::cout << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -156,7 +156,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    string scenario = argv[1];
+    std::string scenario = argv[1];
     
     if (scenario == "unused") {
         scenario_unused();
@@ -167,22 +167,22 @@ int main(int argc, char* argv[]) {
     } else if (scenario == "progressive") {
         scenario_progressive();
     } else if (scenario == "all") {
-        cout << "Running all scenarios sequentially..." << endl;
-        cout << endl;
+        std::cout << "Running all scenarios sequentially..." << std::endl;
+        std::cout << std::endl;
         scenario_unused();
         sleep(2);
         scenario_partial();
         sleep(2);
         scenario_full();
     } else {
-        cout << "Unknown scenario: " << scenario << endl;
-        cout << endl;
+        std::cout << "Unknown scenario: " << scenario << std::endl;
+        std::cout << std::endl;
         print_usage();
         return 1;
     }
     
-    cout << endl;
-    cout << "Demo completed!" << endl;
+    std::cout << std::endl;
+    std::cout << "Demo completed!" << std::endl;
     
     return 0;
 }
