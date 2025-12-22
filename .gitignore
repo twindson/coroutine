@@ -1,0 +1,21 @@
+# Build artifacts
+criu_memory_demo
+*.o
+*.out
+*.exe
+
+# Checkpoint directories
+checkpoint-*
+checkpoint/
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
